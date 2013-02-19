@@ -10,6 +10,7 @@ typedef struct{
 	Edge * edges; //ArcList
 	int numEdges;
 	int cost;
+	int index;
 
 }Node;
 
@@ -81,8 +82,7 @@ void readInput(char * path)
 	{
 		fgets(buffer, READ_BYTE_SIZE, pFile);
 
-		//Copy buffer into the name
-		//strcpy(listOfnodes[i].name,trim(buffer));
+		listOfnodes[i].index = i;
 
 		//Alocating the edge list for each node
 		//FIXME: This is hardcoded
@@ -108,36 +108,39 @@ void readInput(char * path)
 	fgets(buffer, READ_BYTE_SIZE, pFile);
 	fgets(buffer, READ_BYTE_SIZE, pFile);
 
-	char* string;
-	char* tofree;
-	string = strdup(trim(buffer));
-
-	if (string != NULL)
+	while(fgets(buffer, READ_BYTE_SIZE, pFile) != NULL && trim(buffer) != trim("PATHS"))
 	{
+
+		char* string;
+		char* tofree;
+		string = strdup(trim(buffer));
+
+		if (string != NULL)
+		{
 		  tofree = string;
 
 		  char * nodeA = strsep(&string, " ");
 		  char * nodeB = strsep(&string, " ");
 		  char * weight = strsep(&string, " ");
 
-		 // printf("%s\n", nodeA);
-		 //  printf("%s\n", nodeB);
-		  //  printf("%s\n", weight);
+		  printf("%s\n", nodeA);
+		  printf("%s\n", nodeB);
+		  printf("%s\n", weight);
 
+		  Edge edge;
+		  edge.node = &listOfnodes[atoi(nodeB)];
+		  edge.weight = atoi(weight);
 
+		  Node * node = &listOfnodes[atoi(nodeA)];
+		  node->edges[node->numEdges] = edge;
+		  node->numEdges++;
 
-		   Edge edge;
-		   edge.node = findNodeInList(nodeB,listOfnodes,numberOfNodes);
-		   //edge.weight = atoi(weight);
-
-		  // Node * node = findNodeInList(nodeA,nodes,numberOfNodes);
-		  // node->edges[node->numEdges] = edge;
-		  // node->numEdges++;
-
-		  // printf("%s\n", node->name);
-		  // printf("%s\n", node->edges[node->numEdges-1].weight);
+		  printf("%s\n", " ## ");
+		  printf("%i\n", node->index);
+		  //printf("%i\n", node->edges[node->numEdges-1].weight);
 
 		  free(tofree);
+		}
 	}
 
 }
