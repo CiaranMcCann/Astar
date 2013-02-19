@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 struct Edge;
 
@@ -9,7 +10,6 @@ typedef struct{
 	Edge * edges; //ArcList
 	int numEdges;
 	int cost;
-	char name[10];
 
 }Node;
 
@@ -27,20 +27,35 @@ Node * listOfnodes;
 
 #define READ_BYTE_SIZE 300
 
-Node * findNodeInList(char * name, Node * pList, int listLenght)
-{
-	int i = 0;
-	while( i < listLenght)
-	{
-		printf("%s == %s", name,pList[i].name );
-		if(name == pList[i].name)
-			return &pList[i];
-
-		i++;
-	}
-	printf("%s [%s] %s \n", "Error: Node with name", name, "not found");
-	return NULL;
+const char *trim(char *s) {
+    char *ptr;
+    if (!s)
+        return NULL;   // handle NULL string
+    if (!*s)
+        return s;      // handle empty string
+    for (ptr = s + strlen(s) - 1; (ptr >= s) && isspace(*ptr); --ptr);
+    ptr[1] = '\0';
+    return s;
 }
+
+// Node * findNodeInList(char * name, Node * pList, int listLenght)
+// {
+// 	int i = 0;
+// 	while( i < listLenght)
+// 	{
+// 		printf("[%s] == [%s]", trim(name),trim(pList[i].name) );
+// 		if(trim(name) == trim(pList[i].name))
+// 		{
+// 			printf("%s\n", "FOUNED!!!");
+// 			return &pList[i];
+// 		}
+			
+
+// 		i++;
+// 	}
+// 	printf("%s [%s] %s \n", "Error: Node with name", name, "not found");
+// 	return NULL;
+// }
 
 
 void readInput(char * path)
@@ -65,7 +80,9 @@ void readInput(char * path)
 	while( i < numberOfNodes)
 	{
 		fgets(buffer, READ_BYTE_SIZE, pFile);
-		strcpy(listOfnodes[i].name,buffer);
+
+		//Copy buffer into the name
+		//strcpy(listOfnodes[i].name,trim(buffer));
 
 		//Alocating the edge list for each node
 		//FIXME: This is hardcoded
@@ -75,7 +92,7 @@ void readInput(char * path)
 		//printf("%s", listOfnodes[i].name);
 		i++;
 	}
-	
+
 	// int j = 0;
 	// 	    while(j < numberOfNodes)
 	// 	    {
@@ -84,7 +101,7 @@ void readInput(char * path)
 	// 	    	j++;
 	// 	    }
 
-	
+
 	printf("%s\n", "Nodes objects constructed");
 
 	//Seek to next line basically
@@ -93,7 +110,7 @@ void readInput(char * path)
 
 	char* string;
 	char* tofree;
-	string = strdup(buffer);
+	string = strdup(trim(buffer));
 
 	if (string != NULL)
 	{
@@ -103,9 +120,9 @@ void readInput(char * path)
 		  char * nodeB = strsep(&string, " ");
 		  char * weight = strsep(&string, " ");
 
-		  printf("%s\n", nodeA);
-		   printf("%s\n", nodeB);
-		    printf("%s\n", weight);
+		 // printf("%s\n", nodeA);
+		 //  printf("%s\n", nodeB);
+		  //  printf("%s\n", weight);
 
 
 
