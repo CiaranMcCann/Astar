@@ -1,0 +1,15 @@
+5
+NODES
+a
+b
+c
+d
+e
+EDGES
+a b 4
+b c 2
+b e 1
+a c 5
+PATHS
+a e
+b c
