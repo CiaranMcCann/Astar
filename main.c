@@ -1,20 +1,22 @@
+// Author: Ciaran McCann
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "Utilities.h"
 
-struct Edge;
+typedef struct EdgeType Edge;
 
 typedef struct{
 
-	Edge * edges; //ArcList
+	Edge ** edges; //ArcList
 	int numEdges;
 	int cost;
 	int index;
 
 }Node;
 
-struct Edge{
+struct EdgeType{
 
 	Node * node; //Node which it pionts to
 	int weight;
@@ -31,11 +33,11 @@ typedef struct
 
 
 //Stores all the Nodes in the graph
-Node * listOfnodes;
+Node ** listOfnodes;
 int numberOfNodes;
 
 //Stores all the paths that need to be found
-Path listOfPaths[100]; 
+Path listOfPaths[100]; //TODO need to implement LinkList!!
 int numberOfPaths;
 
 
@@ -51,25 +53,6 @@ const char *trim(char *s) {
     ptr[1] = '\0';
     return s;
 }
-
-// Node * findNodeInList(char * name, Node * pList, int listLenght)
-// {
-// 	int i = 0;
-// 	while( i < listLenght)
-// 	{
-// 		printf("[%s] == [%s]", trim(name),trim(pList[i].name) );
-// 		if(trim(name) == trim(pList[i].name))
-// 		{
-// 			printf("%s\n", "FOUNED!!!");
-// 			return &pList[i];
-// 		}
-			
-
-// 		i++;
-// 	}
-// 	printf("%s [%s] %s \n", "Error: Node with name", name, "not found");
-// 	return NULL;
-// }
 
 
 void readInput(char * path)
@@ -88,21 +71,23 @@ void readInput(char * path)
 	fgets(buffer, READ_BYTE_SIZE, pFile);
 
 	//Allocate nodes array on the heap
-	listOfnodes =  (Node*)malloc(sizeof(Node)*numberOfNodes);
+	listOfnodes =  (Node*)malloc(sizeof(Node*)*numberOfNodes);
 
 	int i = 0;
 	while( i < numberOfNodes)
 	{
 		fgets(buffer, READ_BYTE_SIZE, pFile);
 
-		listOfnodes[i].index = i;
+		listOfnodes[i] = malloc(sizeof(Node)*numberOfNodes);
+		listOfnodes[i]->index = i;
+		listOfnodes[i]->cost = i;
 
 		//Alocating the edge list for each node
 		//FIXME: This is hardcoded
-		listOfnodes[i].edges = (Edge*)malloc(sizeof(Edge)*10);
+		listOfnodes[i]->edges = (Edge*)malloc(sizeof(Edge*)*10);
 
 
-		printf("Node [%i] created \n", listOfnodes[i].index);
+		printf("Node [%i] created \n", listOfnodes[i]->index);
 		i++;
 	}
 
@@ -128,11 +113,11 @@ void readInput(char * path)
 
 		  printf("Buffer[%s] Edge: From Node [%s] to Node [%s] weight [%s]\n", buffer, nodeA,nodeB,weight);
 
-		  Edge edge;
-		  edge.node = &listOfnodes[atoi(nodeB)];
-		  edge.weight = atoi(weight);
+		  Edge * edge = malloc(sizeof(Edge));
+		  edge->node = listOfnodes[atoi(nodeB)];
+		  edge->weight = atoi(weight);
 
-		  Node * node = &listOfnodes[atoi(nodeA)];
+		  Node * node = listOfnodes[atoi(nodeA)];
 		  node->edges[node->numEdges] = edge;
 		  node->numEdges++;
 
@@ -150,11 +135,11 @@ void readInput(char * path)
 	{
 		printf("Node [%i] has edges \n", i);
 		int j = 0;
-		while(j < listOfnodes[i].numEdges)
+		while(j < listOfnodes[i]->numEdges)
 		{
-			Edge e = listOfnodes[i].edges[j];
+			Edge * e = listOfnodes[i]->edges[j];
 
-			printf("	Edge to Node [%i] and a weight of %i \n", e.node->index , e.weight);
+			printf("	Edge to Node [%i] and a weight of %i \n", e->node->index , e->weight);
 			j++;
 		}
 		printf("\n");
@@ -185,8 +170,48 @@ void readInput(char * path)
 
 }
 
+void sortNodeArray(Node ** array, int lenght)
+{
+    int i = 0;
+    int notOrder = 1;
+
+    while(notOrder)
+    {
+    	notOrder = 0;
+    	i = 0;
+  
+	    while( i < lenght-1)
+	    {
+	    	//printf("%i\n", array[i].cost);
+	    	if(array[i]->cost < array[i+1]->cost)
+	    	{
+	    		//printf("Swap %i\n with %i\n", array[i].cost, array[i+1].cost);
+	    		//Swap nodes
+	    		Node * tmp = array[i+1];
+	    		array[i+1] = array[i];
+	    		array[i] = tmp;
+	 			notOrder = 1;
+	    	}
+
+	    	i++;
+	    }
+	}
+
+	printf("%s\n", "############");
+	i = 0;
+	while( i < lenght )
+	{
+		 printf("Node %i cost %i\n", array[i]->index, array[i]->cost );
+		 i++;
+	}
+	printf("%s\n", "############");
+
+}
+
 void astar(Node * graph, int start, int dest)
 {
+	//sortNodeArray(listOfnodes,numberOfNodes);
+	//listOfnodes[2]->cost = 99999;
 
 }
 
@@ -194,9 +219,11 @@ int main(int argc, char* argv[])
 {
 	readInput("data.txt");
 
+
 	int i = 0;
 	while( i < numberOfPaths)
 	{
+		printf("Running A * with start Node [%i] and dest [%i] \n", listOfPaths[i].nodeA,listOfPaths[i].nodeB);
 		astar(listOfnodes, listOfPaths[i].nodeA,listOfPaths[i].nodeB);		
 		i++;
 	}
