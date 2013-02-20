@@ -21,10 +21,23 @@ struct Edge{
 
 };
 
+typedef struct 
+{
+	int nodeA;
+	int nodeB;
+
+}Path;
 
 
-int numberOfNodes;
+
+//Stores all the Nodes in the graph
 Node * listOfnodes;
+int numberOfNodes;
+
+//Stores all the paths that need to be found
+Path listOfPaths[100]; 
+int numberOfPaths;
+
 
 #define READ_BYTE_SIZE 300
 
@@ -89,28 +102,18 @@ void readInput(char * path)
 		listOfnodes[i].edges = (Edge*)malloc(sizeof(Edge)*10);
 
 
-		//printf("%s", listOfnodes[i].name);
+		printf("Node [%i] created \n", listOfnodes[i].index);
 		i++;
 	}
 
-	// int j = 0;
-	// 	    while(j < numberOfNodes)
-	// 	    {
-
-	// 	    	printf(listOfnodes[j].name);
-	// 	    	j++;
-	// 	    }
-
-
-	printf("%s\n", "Nodes objects constructed");
+	printf("%s\n\n", "Nodes objects constructed");
 
 	//Seek to next line basically
 	fgets(buffer, READ_BYTE_SIZE, pFile);
-	fgets(buffer, READ_BYTE_SIZE, pFile);
 
-	while(fgets(buffer, READ_BYTE_SIZE, pFile) != NULL && trim(buffer) != trim("PATHS"))
+	// While there are lines in the file and the line is not equal to PATHS
+	while(fgets(buffer, READ_BYTE_SIZE, pFile) != NULL && strncmp(trim(buffer), "PATHS", 4) != 0)
 	{
-
 		char* string;
 		char* tofree;
 		string = strdup(trim(buffer));
@@ -123,9 +126,7 @@ void readInput(char * path)
 		  char * nodeB = strsep(&string, " ");
 		  char * weight = strsep(&string, " ");
 
-		  printf("%s\n", nodeA);
-		  printf("%s\n", nodeB);
-		  printf("%s\n", weight);
+		  printf("Buffer[%s] Edge: From Node [%s] to Node [%s] weight [%s]\n", buffer, nodeA,nodeB,weight);
 
 		  Edge edge;
 		  edge.node = &listOfnodes[atoi(nodeB)];
@@ -135,19 +136,68 @@ void readInput(char * path)
 		  node->edges[node->numEdges] = edge;
 		  node->numEdges++;
 
-		  printf("%s\n", " ## ");
-		  printf("%i\n", node->index);
+		 // printf("Node index: [%i] numEdges: [%i] \n", node->index, node->numEdges);
 		  //printf("%i\n", node->edges[node->numEdges-1].weight);
 
 		  free(tofree);
 		}
 	}
 
+	//Print out some in formative info for the user
+	printf("%s\n\n", "Edges objects constructed");
+	i = 0;
+	while( i < numberOfNodes)
+	{
+		printf("Node [%i] has edges \n", i);
+		int j = 0;
+		while(j < listOfnodes[i].numEdges)
+		{
+			Edge e = listOfnodes[i].edges[j];
+
+			printf("	Edge to Node [%i] and a weight of %i \n", e.node->index , e.weight);
+			j++;
+		}
+		printf("\n");
+
+		i++;
+	}
+
+	//Get the paths to find
+	while(fgets(buffer, READ_BYTE_SIZE, pFile) != NULL)
+	{
+		char* string;
+		char* tofree;
+		string = strdup(trim(buffer));
+
+		if (string != NULL)
+		{
+		  tofree = string;
+
+		  Path path;
+		  path.nodeA = atoi( strsep(&string, " ") );
+		  path.nodeB = atoi( strsep(&string, " ") );
+		  printf("Path: from Node [%i] to Node [%i] \n", path.nodeA, path.nodeB );
+		  listOfPaths[numberOfPaths] = path;
+		  free(tofree);
+		}
+		numberOfPaths++;
+	}
+
 }
 
+void astar(Node * graph, int start, int dest)
+{
+
+}
 
 int main(int argc, char* argv[])
 {
 	readInput("data.txt");
-	//getch();
+
+	int i = 0;
+	while( i < numberOfPaths)
+	{
+		astar(listOfnodes, listOfPaths[i].nodeA,listOfPaths[i].nodeB);		
+		i++;
+	}
 }
