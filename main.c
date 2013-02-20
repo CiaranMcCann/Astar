@@ -148,14 +148,16 @@ void readInput(char * path)
 
 void astar(Node * graph, int start, int dest)
 {
-	sortNodeArray(listOfnodes,numberOfNodes);
+	removeNodeFromArray(listOfnodes,numberOfNodes,2);
+	//sortNodeArray(listOfnodes,numberOfNodes);
+
 }
 
 int main(int argc, char* argv[])
 {
 	readInput("data.txt");
 
-	int i = 0;
+	int i = 1;
 	while( i < numberOfPaths)
 	{
 		printf("Running A * with start Node [%i] and dest [%i] \n", listOfPaths[i].nodeA,listOfPaths[i].nodeB);

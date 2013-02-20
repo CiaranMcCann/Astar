@@ -3,12 +3,16 @@
 void removeNodeFromArray(Node ** array, int lenght, int indexToRemove)
 {
 	//If othered in other of greater then
-	array[indexToRemove] = -1;
+	array[indexToRemove]->cost = -10;
 	sortNodeArray(array,lenght);
 
-	free(array[lenght]);
-	array[lenght] = NULL;
-	lenght--;
+	//FIXME free memory correctly or not fuck it lol
+	 //free(array[lenght-1]);
+	 //array[lenght-1] = NULL;
+
+	 lenght--;
+	 //printf("%s\n", "dfd");
+	 sortNodeArray(array,lenght);
 }
 
 void sortNodeArray(Node ** array, int lenght)
