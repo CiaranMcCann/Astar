@@ -198,29 +198,7 @@ int main(int argc, char* argv[])
 
 
 	printf("%s\n", "Program started");
-
-	List * list = new_List();
-
-	int i = 0;
-	while(i < 10)
-	{
-		Node * tmp = malloc(sizeof(Node*));
-		tmp->x = i;
-		ListPush(list,tmp);
-		i++;
-	}
-
-	Link * tmp = ListHead(list);
-	i = 0;
-	while(i < 9)
-	{
-	
-		printf("%i\n", ((Node *)(tmp->mData))->x );
-		tmp = ListNext(tmp);
-		i++;
-	}
-
-	
+	ListRunAllTests();
 
 	return 0;
 
