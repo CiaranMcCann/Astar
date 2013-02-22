@@ -8,7 +8,14 @@ typedef struct{
 
 	Edge ** edges; //ArcList
 	int numEdges;
-	int cost;
+
+	int x;
+	int y;
+
+
+	int actualCost;
+	int estimatedCost;
+	
 	int index;
 
 }Node;

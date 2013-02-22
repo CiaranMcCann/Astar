@@ -42,6 +42,10 @@ void readInput(char * path)
 	fgets(buffer, READ_BYTE_SIZE, pFile);
 	numberOfNodes = atoi(buffer);
 
+	//Get the number of edges from the file
+	fgets(buffer, READ_BYTE_SIZE, pFile);
+	int numberOfEdges = atoi(buffer);
+
 	//Seek to next line basically
 	fgets(buffer, READ_BYTE_SIZE, pFile);
 
@@ -59,7 +63,7 @@ void readInput(char * path)
 
 		//Alocating the edge list for each node
 		//FIXME: This is hardcoded
-		listOfnodes[i]->edges = (Edge*)malloc(sizeof(Edge*)*10);
+		listOfnodes[i]->edges = (Edge*)malloc(sizeof(Edge*)*numberOfEdges);
 
 
 		printf("Node [%i] created \n", listOfnodes[i]->index);
@@ -146,9 +150,19 @@ void readInput(char * path)
 }
 
 
-void astar(Node * graph, int start, int dest)
+void astar(Node ** graph, int numNodes, int start, int dest)
 {
-	removeNodeFromArray(listOfnodes,numberOfNodes,2);
+	Node ** closedList = (Node*)malloc(sizeof(Node*)*numNodes);
+	Node ** openList = (Node*)malloc(sizeof(Node*)*numNodes);
+
+	int openListNumber = 0;
+	int closedListNumber = 0;
+
+	closedList[closedList] = graph[start];
+
+
+
+	//removeNodeFromArray(listOfnodes,numberOfNodes,2);
 	//sortNodeArray(listOfnodes,numberOfNodes);
 
 }
@@ -157,7 +171,7 @@ int main(int argc, char* argv[])
 {
 	readInput("data.txt");
 
-	int i = 1;
+	int i = 1; //JUST FOR DEBUG should be 0
 	while( i < numberOfPaths)
 	{
 		printf("Running A * with start Node [%i] and dest [%i] \n", listOfPaths[i].nodeA,listOfPaths[i].nodeB);

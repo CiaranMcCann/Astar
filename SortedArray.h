@@ -3,7 +3,7 @@
 void removeNodeFromArray(Node ** array, int lenght, int indexToRemove)
 {
 	//If othered in other of greater then
-	array[indexToRemove]->cost = -10;
+	//array[indexToRemove]->cost = -10;
 	sortNodeArray(array,lenght);
 
 	//FIXME free memory correctly or not fuck it lol
@@ -28,7 +28,7 @@ void sortNodeArray(Node ** array, int lenght)
 	    while( i < lenght-1)
 	    {
 	    	//printf("%i\n", array[i].cost);
-	    	if(array[i]->cost < array[i+1]->cost)
+	    	if( (array[i]->actualCost + array[i]->estimatedCost) < (array[i+1]->actualCost + array[i+1]->estimatedCost))
 	    	{
 	    		//printf("Swap %i\n with %i\n", array[i].cost, array[i+1].cost);
 	    		//Swap nodes
