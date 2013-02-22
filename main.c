@@ -165,18 +165,12 @@ double calcHeuristic(float x0, float y0, float x1, float y1)
 	float y2 = y0 - y1; 
 	float d = (x2*x2)-(y2*y2);
 
-	return sqrt(60);
+	return sqrt(60); //SQRT WILL NOT TAKE D what the fuck????
 }
 
 
 void astar(Node ** graph, int numNodes, int start, int dest)
 {
-	//Node ** closedList = (Node*)malloc(sizeof(Node*)*numNodes);
-	//Node ** openList = (Node*)malloc(sizeof(Node*)*numNodes);
-
-	//int openListLenght = 0;
-	//int closedListLenght = 0;
-
 	List * closedList = ListAllocate();
 	List * openedList = ListAllocate();
 
@@ -187,18 +181,25 @@ void astar(Node ** graph, int numNodes, int start, int dest)
 	// While the open list is not empty and the top of the open list instead the desition
 	while(openedList->mLength > 0 && ListHead(openedList)->mData != endNode )
 	{
-		Node * node = ListPop(openedList)->mData;
+		Node * node = ListPop(openedList)->mData;		
 		node->estimatedCost = calcHeuristic( node->x, node->y, endNode->x, endNode->y);
 
+		printf("%s\n", "Expanding now");
 		//expand connecting Nodes
 		int i = 0;
 		while( i < node->numEdges)
 		{
 			ListPush( openedList, node->edges[i]->node );
-			printf("%s\n", "Push Node onto openedList");
+			printf("%s\n", "	Push Node onto openedList");
 			i++;
 		}
+
+		//Node has been completely expanded so put in closed list
+		ListPush(closedList, node);
+
+		printf(" openedList head %i and dest %i \n", ListHead(openedList)->mData, endNode);
 	}
+
 
 }
 

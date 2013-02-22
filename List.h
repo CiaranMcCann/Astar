@@ -45,11 +45,8 @@ void ListPush(List * list,void * data)
     link->mData = data;
     link->mNext = 0;
 
-    //Adding new link so increment
-    list->mLength++;
-
     // if the list is empty
-    if(list->mTail == 0 && list->mHead == 0)
+    if(list->mLength == 0)
     {
         list->mTail = link;
         list->mHead = link;
@@ -61,6 +58,9 @@ void ListPush(List * list,void * data)
         list->mTail->mNext = link;
         list->mTail = link;
     }
+
+    //Adding new link so increment
+    list->mLength++;
 }
 
 // Only for test
