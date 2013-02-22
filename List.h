@@ -63,6 +63,7 @@ void ListPush(List * list,void * data)
     }
 }
 
+// Only for test
 typedef struct 
 {
     int x;
