@@ -159,38 +159,46 @@ void loadData(char * path)
 }
 
 //Straight line distance
-// double calcHeuristic(float x0, float y0, float x1, float y1)
-// {
-// 	float x2 = x0 - x1;
-// 	float y2 = y0 - y1; 
-// 	float d = (x2*x2)-(y2*y2);
+double calcHeuristic(float x0, float y0, float x1, float y1)
+{
+	float x2 = x0 - x1;
+	float y2 = y0 - y1; 
+	float d = (x2*x2)-(y2*y2);
 
-// 	return sqrt(d);
-// }
+	return sqrt(60);
+}
 
 
 void astar(Node ** graph, int numNodes, int start, int dest)
 {
-	Node ** closedList = (Node*)malloc(sizeof(Node*)*numNodes);
-	Node ** openList = (Node*)malloc(sizeof(Node*)*numNodes);
+	//Node ** closedList = (Node*)malloc(sizeof(Node*)*numNodes);
+	//Node ** openList = (Node*)malloc(sizeof(Node*)*numNodes);
 
-	int openListLenght = 0;
-	int closedListLenght = 0;
+	//int openListLenght = 0;
+	//int closedListLenght = 0;
 
-	//openList[openListLenght] = graph[start];
-	//sortNodeArray(openList,numberOfNodes);
+	List * closedList = ListAllocate();
+	List * openedList = ListAllocate();
 
-	//while(openListLenght > 0)
-	//{
-		//expand
-	//}
+	ListPush(openedList, graph[start]);
 
-	//
+	Node * endNode = graph[dest];
 
+	// While the open list is not empty and the top of the open list instead the desition
+	while(openedList->mLength > 0 && ListHead(openedList)->mData != endNode )
+	{
+		Node * node = ListPop(openedList)->mData;
+		node->estimatedCost = calcHeuristic( node->x, node->y, endNode->x, endNode->y);
 
-
-	//removeNodeFromArray(listOfnodes,numberOfNodes,2);
-	//
+		//expand connecting Nodes
+		int i = 0;
+		while( i < node->numEdges)
+		{
+			ListPush( openedList, node->edges[i]->node );
+			printf("%s\n", "Push Node onto openedList");
+			i++;
+		}
+	}
 
 }
 
