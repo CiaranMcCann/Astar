@@ -42,13 +42,13 @@ void sortNodeArray(Node ** array, int lenght)
 	    }
 	}
 
-	printf("%s\n", "############");
-	i = 0;
-	while( i < lenght )
-	{
-		 printf("Node %i cost %i\n", array[i]->index, array[i]->cost );
-		 i++;
-	}
-	printf("%s\n", "############");
+	// printf("%s\n", "############");
+	// i = 0;
+	// while( i < lenght )
+	// {
+	// 	 printf("Node %i cost %i\n", array[i]->index, array[i]->cost );
+	// 	 i++;
+	// }
+	// printf("%s\n", "############");
 
 }
