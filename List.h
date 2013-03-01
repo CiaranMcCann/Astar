@@ -149,6 +149,21 @@ List * ListAllocate()
     return list;
 }
 
+List * ListFind(List * list, void * data, int (* cmp)(void *, void *))
+{
+    Link * iter = list->mHead;
+
+    while(iter != 0)
+    {
+        if(cmp(data,iter->mData))
+        {
+            return iter;
+        }
+
+        iter = iter->mNext;
+    }
+}
+
 // Destructor method
 void ListDeallocate(List * list)
 {

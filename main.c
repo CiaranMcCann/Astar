@@ -17,9 +17,7 @@ int numberOfNodes;
 Path listOfPaths[100]; //TODO need to implement LinkList!!
 int numberOfPaths;
 
-
 #define READ_BYTE_SIZE 300
-
 
 void loadData(char * path)
 {
@@ -107,9 +105,6 @@ void loadData(char * path)
 		  Node * node = listOfnodes[atoi(nodeA)];
 		  node->edges[node->numEdges] = edge;
 		  node->numEdges++;
-
-		 // printf("Node index: [%i] numEdges: [%i] \n", node->index, node->numEdges);
-		  //printf("%i\n", node->edges[node->numEdges-1].weight);
 
 		  free(tofree);
 		}
