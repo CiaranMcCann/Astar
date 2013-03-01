@@ -3,8 +3,10 @@
 
 
 typedef struct EdgeType Edge;
+//typedef struct Node NodeType;
+//typedef struct Node Node;
 
-typedef struct{
+typedef struct Node_t{
 
 	Edge ** edges; //ArcList
 	int numEdges;
@@ -15,10 +17,12 @@ typedef struct{
 
 	int actualCost;
 	int estimatedCost;
+
+	struct Node_t * previous;
 	
 	int index;
 
-}Node;
+} Node;
 
 struct EdgeType{
 

@@ -67,7 +67,7 @@ void loadData(char * path)
 
 			//Alocating the edge list for each node
 			//TODO Fix spec to have edges first
-			listOfnodes[i]->edges = (Edge*)malloc(sizeof(Edge*)*10);
+			listOfnodes[i]->edges = (Edge*)malloc(sizeof(Edge*)*20);
 
 		  free(tofree);
 		}
@@ -159,47 +159,69 @@ void loadData(char * path)
 }
 
 //Straight line distance
-double calcHeuristic(float x0, float y0, float x1, float y1)
+int calcHeuristic(int x0, int y0, int x1, int y1)
 {
-	float x2 = x0 - x1;
-	float y2 = y0 - y1; 
-	float d = (x2*x2)-(y2*y2);
+	int x2 = x0 - x1;
+	int y2 = y0 - y1; 
+	int d = (x2*x2)+(y2*y2);
 
-	return sqrt(60); //SQRT WILL NOT TAKE D what the fuck????
+	return (int) sqrt((double)d);
 }
 
+int nodeCompare(void * a, void * b)
+{
+    Node * x = a;
+    Node * y = b;
+
+    return (x->actualCost + x->estimatedCost) > (y->actualCost + y->estimatedCost);
+}
 
 void astar(Node ** graph, int numNodes, int start, int dest)
 {
 	List * closedList = ListAllocate();
 	List * openedList = ListAllocate();
 
-	ListPush(openedList, graph[start]);
-
 	Node * endNode = graph[dest];
+
+	graph[start]->estimatedCost = calcHeuristic( graph[start]->x, graph[start]->y, endNode->x, endNode->y);
+	ListPush(openedList, graph[start],nodeCompare);
+	
+	Node * node;
 
 	// While the open list is not empty and the top of the open list instead the desition
 	while(openedList->mLength > 0 && ListHead(openedList)->mData != endNode )
 	{
-		Node * node = ListPop(openedList)->mData;		
-		node->estimatedCost = calcHeuristic( node->x, node->y, endNode->x, endNode->y);
+		node = ListPop(openedList)->mData;
 
-		printf("%s\n", "Expanding now");
+		printf("Expanding node [%i] that has [%i] edges\n",node->index, node->numEdges);
 		//expand connecting Nodes
 		int i = 0;
+
 		while( i < node->numEdges)
 		{
-			ListPush( openedList, node->edges[i]->node );
-			printf("%s\n", "	Push Node onto openedList");
+			Node * toExpand = node->edges[i]->node;
+			toExpand->estimatedCost = calcHeuristic( toExpand->x, toExpand->y, endNode->x, endNode->y);
+			toExpand->actualCost = node->edges[i]->weight;
+
+			//Aside previous node so path can be traverised
+			toExpand->previous = node;
+			
+			printf("Push Node %i onto openedList with emimatedCost %i and actualCost %i \n", toExpand->index, toExpand->estimatedCost, toExpand->actualCost );
+			ListPush( openedList, toExpand, nodeCompare);
+			
 			i++;
 		}
 
 		//Node has been completely expanded so put in closed list
-		ListPush(closedList, node);
-
-		printf(" openedList head %i and dest %i \n", ListHead(openedList)->mData, endNode);
+		ListPush(closedList, node,nodeCompare);
 	}
 
+	printf("\n PATH \n");
+	while(endNode != 0)
+	{		
+		printf("Pionter %i Index %i \n", endNode->previous, endNode->index);
+		endNode = endNode->previous;
+	}
 
 }
 
@@ -212,10 +234,10 @@ int main(int argc, char* argv[])
 
 	loadData("data.txt");
 
-	int i = 1; //JUST FOR DEBUG should be 0
+	int i = 0; 
 	while( i < numberOfPaths)
 	{
-		printf("Running A * with start Node [%i] and dest [%i] \n", listOfPaths[i].nodeA,listOfPaths[i].nodeB);
+		printf("\n\nRunning A * with start Node [%i] and dest [%i] \n", listOfPaths[i].nodeA,listOfPaths[i].nodeB);
 		astar(listOfnodes, numberOfNodes, listOfPaths[i].nodeA,listOfPaths[i].nodeB);		
 		i++;
 	}

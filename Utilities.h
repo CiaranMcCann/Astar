@@ -8,3 +8,10 @@ const char *trim(char *s) {
     ptr[1] = '\0';
     return s;
 }
+
+unsigned int randr(unsigned int min, unsigned int max)
+{
+       double scaled = (double)rand()/RAND_MAX;
+
+       return (max - min +1)*scaled + min;
+}

@@ -39,7 +39,7 @@ Link * ListHead(List * list)
 
 
 
-void ListPush(List * list,void * data)
+void ListPush(List * list,void * data,int (* cmp)(void *, void *))
 {
     Link * link = (Link*)malloc(sizeof(Link*));
     link->mData = data;
@@ -58,9 +58,11 @@ void ListPush(List * list,void * data)
         list->mTail->mNext = link;
         list->mTail = link;
     }
-
     //Adding new link so increment
     list->mLength++;
+    
+    ListSort(list,cmp);
+
 }
 
 // Only for test
@@ -80,19 +82,25 @@ void ListSort(List * list, int (* cmp)(void *, void *))
     {
         notOrder = 0;
         i = 0;
+        tmp = ListHead(list);
         
-        while( i < list->mLength-1)
+        while( i < list->mLength-1 && tmp->mNext != 0)
         {
-            
-            if(cmp( tmp,  ListNext(tmp) ))
-            {
-                
-                void * dataToBeSwapped = tmp->mData;
-                void * otherDataToBeSwapped = ListNext(tmp)->mData;
-                printf("%s %i with %i \n", "Swap", ((SomeDataType*)(dataToBeSwapped))->x,((SomeDataType*)(otherDataToBeSwapped))->x );
 
-                tmp->mData = otherDataToBeSwapped;   
-                ListNext(tmp)->mData = dataToBeSwapped; 
+            Link * dataToBeSwapped = tmp;
+            Link * otherDataToBeSwapped = ListNext(tmp);
+
+            SomeDataType * dataA = dataToBeSwapped->mData;
+            SomeDataType * dataB = otherDataToBeSwapped->mData;
+            
+            if( cmp( dataA, dataB ) )
+            {
+                //printf("Index %i - Swap %i with %i \n", i, dataA->x,dataB->x );
+
+                void * tempData = dataToBeSwapped->mData;
+                dataToBeSwapped->mData = otherDataToBeSwapped->mData;
+                otherDataToBeSwapped->mData = tempData;
+ 
 
                 notOrder = 1;
             }
@@ -101,6 +109,19 @@ void ListSort(List * list, int (* cmp)(void *, void *))
 
             i++;
         }
+    }
+
+    printf("%s\n", "Ordered");
+    {
+        Link * iter = list->mHead;
+
+            while(iter!= 0)
+            {          
+                Node * p = iter->mData;
+                printf("    Item %i Node %i \n", p->actualCost + p->estimatedCost, p->index);
+
+                iter = iter->mNext;
+            }
     }
 }
 
@@ -143,8 +164,8 @@ int cmp(void * a, void * b)
 {
     SomeDataType * x = a;
     SomeDataType * y = b;
-
-    return x->x < y->x;
+    //printf("%i > %i\n", x->x , y->x);
+    return x->x > y->x;
 }
 
 void ListTestPushPop()
@@ -158,7 +179,7 @@ void ListTestPushPop()
         tmp->x = i;
 
         //Add links to the end of the list
-        ListPush(list,tmp);
+        ListPush(list,tmp,cmp);
         i++;
     }
 
@@ -187,23 +208,49 @@ void ListTestSort()
     while(i < 10)
     {
         SomeDataType * tmp = malloc(sizeof(SomeDataType*));
-        tmp->x = i;
+        tmp->x = randr(0,10);
 
         //Add links to the end of the list
-        ListPush(list,tmp);
+        ListPush(list,tmp,cmp);
         i++;
     }
 
-    ListSort(list,cmp);
+    
+    //tmp = ListHead(list)->mData;
+    //assert( tmp->x == 9 && " UNIT TEST FAILED ");
+    printf("%s\n", "Unordered");
+    {
+        Link * iter = list->mHead;
 
-    tmp = ListHead(list)->mData;
-    assert( tmp->x == 9 && " UNIT TEST FAILED ");
+            while(iter!= 0)
+            {          
+                SomeDataType * p = iter->mData;
+                printf("Item %i\n", p->x);
+
+                iter = iter->mNext;
+            }
+    }
+
+        ListSort(list,cmp);
+
+    printf("%s\n", "Ordered");
+    {
+        Link * iter = list->mHead;
+
+            while(iter!= 0)
+            {          
+                SomeDataType * p = iter->mData;
+                printf("Item %i\n", p->x);
+
+                iter = iter->mNext;
+            }
+    }
 }
 
 
 void ListRunAllTests()
 {
-    ListTestPushPop();
+    //ListTestPushPop();
     ListTestSort();
 }
 
