@@ -61,7 +61,10 @@ void ListPush(List * list,void * data,int (* cmp)(void *, void *))
     //Adding new link so increment
     list->mLength++;
     
-    ListSort(list,cmp);
+    if(cmp != 0)
+    {
+        ListSort(list,cmp);
+    }
 
 }
 
@@ -111,18 +114,18 @@ void ListSort(List * list, int (* cmp)(void *, void *))
         }
     }
 
-    printf("%s\n", "Ordered");
-    {
-        Link * iter = list->mHead;
+    // printf("%s\n", "Ordered");
+    // {
+    //     Link * iter = list->mHead;
 
-            while(iter!= 0)
-            {          
-                Node * p = iter->mData;
-                printf("    Item %i Node %i \n", p->actualCost + p->estimatedCost, p->index);
+    //         while(iter!= 0)
+    //         {          
+    //             Node * p = iter->mData;
+    //             printf("    Item %i Node %i \n", p->actualCost + p->estimatedCost, p->index);
 
-                iter = iter->mNext;
-            }
-    }
+    //             iter = iter->mNext;
+    //         }
+    // }
 }
 
 Link * ListPop(List * list)
@@ -149,7 +152,7 @@ List * ListAllocate()
     return list;
 }
 
-List * ListFind(List * list, void * data, int (* cmp)(void *, void *))
+Link * ListFind(List * list, void * data, int (* cmp)(void *, void *))
 {
     Link * iter = list->mHead;
 
@@ -162,6 +165,8 @@ List * ListFind(List * list, void * data, int (* cmp)(void *, void *))
 
         iter = iter->mNext;
     }
+
+    return iter;
 }
 
 // Destructor method

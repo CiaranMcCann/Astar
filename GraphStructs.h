@@ -20,7 +20,8 @@ typedef struct Node_t{
 
 	struct Node_t * previous;
 	
-	int index;
+	//int index;
+	char * name;
 
 } Node;
 
@@ -33,8 +34,8 @@ struct EdgeType{
 
 typedef struct 
 {
-	int nodeA;
-	int nodeB;
+	Node * nodeA;
+	Node * nodeB;
 
 }Path;
 
