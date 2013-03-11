@@ -38,7 +38,6 @@ Link * ListHead(List * list)
 }
 
 
-
 void ListPush(List * list,void * data,int (* cmp)(void *, void *))
 {
     Link * link = (Link*)malloc(sizeof(Link*));

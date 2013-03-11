@@ -5,7 +5,6 @@
 #include <stdarg.h>
 #include <math.h>
 #include "Utilities.h"
-#include "SortedArray.h"
 #include "GraphStructs.h"
 #include "List.h"
 
@@ -38,9 +37,9 @@ int calcHeuristic(int x0, int y0, int x1, int y1)
 {
 	int x2 = x0 - x1;
 	int y2 = y0 - y1; 
-	int d = (x2*x2)+(y2*y2);
+	int distance = (x2*x2)+(y2*y2);
 
-	return (int) sqrt((double)d);
+	return (int) sqrt((double)distance);
 }
 
 
@@ -172,7 +171,6 @@ void loadDataInGraph(char * path, List * nodeList, List * pathList)
 
 	free(start);
 	free(dest);
-
 }
 
 
@@ -183,28 +181,29 @@ void astar(List * graph, Node * start, Node * dest)
 
 	Node * endNode = dest;
 
+	//Holds the node current beging expanded
+	Node * currentNode;
+
 	start->estimatedCost = calcHeuristic( start->x, start->y, endNode->x, endNode->y);
-	ListPush(openedList, start,nodeCompare);
-	
-	Node * node;
+	ListPush(openedList, start,nodeCompare);	
 
 	// While the open list is not empty and the top of the open list instead the desition
 	while(openedList->mLength > 0 && ListHead(openedList)->mData != endNode )
 	{
-		node = ListPop(openedList)->mData;
+		currentNode = ListPop(openedList)->mData;
 
-		//printf("Expanding node [%i] that has [%i] edges\n",node->name, node->numEdges);
+		//printf("Expanding currentNode [%i] that has [%i] edges\n",currentNode->name, currentNode->numEdges);
 		//expand connecting Nodes
 		int i = 0;
 
-		while( i < node->numEdges)
+		while( i < currentNode->numEdges)
 		{
-			Node * toExpand = node->edges[i]->node;
+			Node * toExpand = currentNode->edges[i]->node;
 			toExpand->estimatedCost = calcHeuristic( toExpand->x, toExpand->y, endNode->x, endNode->y);
-			toExpand->actualCost = node->edges[i]->weight;
+			toExpand->actualCost = currentNode->edges[i]->weight;
 
 			//Aside previous node so path can be traverised
-			toExpand->previous = node;
+			toExpand->previous = currentNode;
 			
 			//printf("Push Node %i onto openedList with emimatedCost %i and actualCost %i \n", toExpand->name, toExpand->estimatedCost, toExpand->actualCost );
 			ListPush( openedList, toExpand, nodeCompare);
@@ -213,7 +212,7 @@ void astar(List * graph, Node * start, Node * dest)
 		}
 
 		//Node has been completely expanded so put in closed list
-		ListPush(closedList, node,nodeCompare);
+		ListPush(closedList, currentNode,nodeCompare);
 	}
 
 	while(endNode != 0)
@@ -226,9 +225,7 @@ void astar(List * graph, Node * start, Node * dest)
 
 int main(int argc, char* argv[])
 {
-
 	//ListRunAllTests();
-
 	List * nodeList = ListAllocate();
 	List * pathList = ListAllocate();
 
@@ -236,11 +233,9 @@ int main(int argc, char* argv[])
 	{
 		//Read name of file from commandline
 		loadDataInGraph(argv[1],nodeList,pathList);
-
 	}else{
 		loadDataInGraph("data.txt",nodeList,pathList);
-	}
-	
+	}	
 
 	Link * pathListIter = pathList->mHead;
 	Path * currentPath = 0;
