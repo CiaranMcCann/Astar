@@ -14,18 +14,19 @@ Node ** listOfnodes;
 int numberOfNodes;
 
 //Stores all the paths that need to be found
-Path listOfPaths[100]; //TODO need to implement LinkList!!
-int numberOfPaths;
+//Path listOfPaths[100]; //TODO need to implement LinkList!!
+//int numberOfPaths;
 
 #define READ_BYTE_SIZE 300
 
 //Used to find a node by name in the list
-int lookUpCmp(void * a, void * b)
+int lookUpCmp(void * dataA, void * dataB)
 {
-    Node * y = b;
-    char * x = a;
+    Node * node = dataA;
+    char * name = dataB;
 
-    return strncmp(trim(x), y->name, 5);
+    //printf("Node %s looking for %s \n", node->name, name );
+    return (strncmp(trim(name), trim(node->name), 4) == 0);
 }
 
 void loadData(char * path, List * nodeList, List * pathList)
@@ -116,25 +117,25 @@ void loadData(char * path, List * nodeList, List * pathList)
 
 		if (string != NULL)
 		{
-		  tofree = string;
+			tofree = string;
 
-		  char * nodeAName = strsep(&string, " ");
-		  char * nodeBName = strsep(&string, " ");
-		  char * weight = strsep(&string, " ");
+			char * nodeAName = strsep(&string, " ");
+			char * nodeBName = strsep(&string, " ");
+			char * weight = strsep(&string, " ");
 
-		  printf("Buffer[%s] Edge: From Node [%s] to Node [%s] weight [%s]\n", buffer, nodeAName,nodeBName,weight);
+			printf("Buffer[%s] Edge: From Node [%s] to Node [%s] weight [%s]\n", buffer, nodeAName,nodeBName,weight);
 
-		   Edge * edge = malloc(sizeof(Edge));
-		   edge->node = ListFind(nodeList,nodeBName, lookUpCmp)->mData; //listOfnodes[atoi(nodeB)];
-		   edge->weight = atoi(weight);
+			Edge * edge = malloc(sizeof(Edge));
+			edge->node = ListFind(nodeList,nodeBName, lookUpCmp)->mData; //listOfnodes[atoi(nodeB)];
+			edge->weight = atoi(weight);
 
-		   printf("%s\n", edge->node->name);
 
-		  // Node * node = ListFind(nodeList,nodeAName, lookUpCmp)->mData; //listOfnodes[atoi(nodeA)];
-		  // node->edges[node->numEdges] = edge;
-		  // node->numEdges++;
+			Node * node = ListFind(nodeList,nodeAName, lookUpCmp)->mData; //listOfnodes[atoi(nodeA)];
+			node->edges[node->numEdges] = edge;
+			node->numEdges++;
 
-		  free(tofree);
+			//printf("Edge from %s to %s\n", node->name, edge->node->name );
+			free(tofree);
 		}
 	}
 

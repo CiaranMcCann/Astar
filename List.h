@@ -152,13 +152,13 @@ List * ListAllocate()
     return list;
 }
 
-Link * ListFind(List * list, void * data, int (* cmp)(void *, void *))
+Link * ListFind(List * list, void * nodeName, int (* cmp)(void *, void *))
 {
     Link * iter = list->mHead;
 
     while(iter != 0)
     {
-        if(cmp(data,iter->mData))
+        if(cmp(iter->mData,nodeName))
         {
             return iter;
         }
