@@ -78,6 +78,7 @@ void loadDataInGraph(char * path, List * nodeList, List * pathList)
 		newNode->y = atoi(y);
 
 		//Alocating the edge list for each node
+		newNode->edgeList = ListAllocate();
 		newNode->edges = (Edge*)malloc(sizeof(Edge*)*20);
 
 		ListPush(nodeList,newNode, 0);
@@ -99,16 +100,13 @@ void loadDataInGraph(char * path, List * nodeList, List * pathList)
 		}
 	}
 
-	// //Seek to next line basically
-	fgets(buffer, READ_BYTE_SIZE, pFile);
+	// Seek to next line two lines basically
+	fgets(buffer, READ_BYTE_SIZE, pFile); // "EDGES"
+	fgets(buffer, READ_BYTE_SIZE, pFile); // numEdges 
 
 	char * nodeAName;
 	char * nodeBName;
 	char * weight;
-
-	//Get the number of edges from the file
-	fgets(buffer, READ_BYTE_SIZE, pFile);
-	int numberOfEdges = atoi(buffer);
 
 	// While there are lines in the file and the line is not equal to PATHS
 	while(fgets(buffer, READ_BYTE_SIZE, pFile) != NULL && strncmp(trim(buffer), "PATHS", 5) != 0)
@@ -125,8 +123,9 @@ void loadDataInGraph(char * path, List * nodeList, List * pathList)
 		edge->weight = atoi(weight);
 
 		Node * node = ListFind(nodeList,nodeAName, lookUpCmp)->mData;
-		node->edges[node->numEdges] = edge;
-		node->numEdges++;
+		ListPush(node->edgeList, edge, 0);
+		//node->edges[node->numEdges] = edge;
+		//node->numEdges++;
 	}
 
 	free(nodeAName);
@@ -143,13 +142,15 @@ void loadDataInGraph(char * path, List * nodeList, List * pathList)
 		{          
 			currentNode = nodeListIter->mData;
 			printf("Node [%s] has edges \n", currentNode->name);
-			int j = 0;
-			while(j < currentNode->numEdges)
-			{
-				Edge * e = currentNode->edges[j];
 
-				printf("	Edge to Node [%s] and a weight of %i \n", e->node->name, e->weight);
-				j++;
+			Link * edgeIter = currentNode->edgeList->mHead;
+			Edge * currentEdge = 0;
+			while( edgeIter != 0)
+			{
+				currentEdge = edgeIter->mData;		
+				printf("	Edge to Node [%s] and a weight of %i \n", currentEdge->node->name, currentEdge->weight);
+
+				edgeIter = edgeIter->mNext;
 			}
 			printf("\n");
 			nodeListIter = nodeListIter->mNext;
@@ -194,13 +195,16 @@ void astar(List * graph, Node * start, Node * dest)
 
 		//printf("Expanding currentNode [%i] that has [%i] edges\n",currentNode->name, currentNode->numEdges);
 		//expand connecting Nodes
-		int i = 0;
 
-		while( i < currentNode->numEdges)
+		Link * edgeIter = currentNode->edgeList->mHead;
+		Edge * currentEdge = 0;
+		while( edgeIter != 0)
 		{
-			Node * toExpand = currentNode->edges[i]->node;
+			currentEdge = edgeIter->mData;
+
+			Node * toExpand = currentEdge->node;
 			toExpand->estimatedCost = calcHeuristic( toExpand->x, toExpand->y, endNode->x, endNode->y);
-			toExpand->actualCost = currentNode->edges[i]->weight;
+			toExpand->actualCost = currentEdge->weight;
 
 			//Aside previous node so path can be traverised
 			toExpand->previous = currentNode;
@@ -208,7 +212,7 @@ void astar(List * graph, Node * start, Node * dest)
 			//printf("Push Node %i onto openedList with emimatedCost %i and actualCost %i \n", toExpand->name, toExpand->estimatedCost, toExpand->actualCost );
 			ListPush( openedList, toExpand, nodeCompare);
 			
-			i++;
+			edgeIter = edgeIter->mNext;
 		}
 
 		//Node has been completely expanded so put in closed list

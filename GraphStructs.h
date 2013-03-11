@@ -1,5 +1,6 @@
 #ifndef GRAPH_STRUCTS
 #define GRAPH_STRUCTS value
+#include "List.h"
 
 
 typedef struct EdgeType Edge;
@@ -8,6 +9,7 @@ typedef struct EdgeType Edge;
 
 typedef struct Node_t{
 
+	List * edgeList;
 	Edge ** edges; //ArcList
 	int numEdges;
 
