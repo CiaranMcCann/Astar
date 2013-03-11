@@ -14,13 +14,11 @@ typedef struct Node_t{
 	int x;
 	int y;
 
-
 	int actualCost;
 	int estimatedCost;
 
 	struct Node_t * previous;
-	
-	//int index;
+
 	char * name;
 
 } Node;

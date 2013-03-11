@@ -9,8 +9,11 @@
 #include "GraphStructs.h"
 #include "List.h"
 
+#define DEBUG_MODE 1
 #define READ_BYTE_SIZE 300
 #define READ_BUFFER 500
+
+// Predicate functions //
 
 //Compare function used to find a node with name
 int lookUpCmp(void * node, void * nodeName)
@@ -19,7 +22,29 @@ int lookUpCmp(void * node, void * nodeName)
 	return (strncmp(trim(nodeName), trim( ((Node*)node)->name), strlen(nodeName)) == 0);
 }
 
-void loadData(char * path, List * nodeList, List * pathList)
+//Compares the Nodes so as to allow them be sorted
+int nodeCompare(void * pNodeA, void * pNodeB)
+{
+	//Casting to actual types
+	Node * nodeA = pNodeA;
+	Node * nodeB = pNodeB;
+
+	return (nodeA->actualCost + nodeA->estimatedCost) > (nodeB->actualCost + nodeB->estimatedCost);
+}
+// End Predicate functions //
+
+//Straight line distance - Heuristic for aStar
+int calcHeuristic(int x0, int y0, int x1, int y1)
+{
+	int x2 = x0 - x1;
+	int y2 = y0 - y1; 
+	int d = (x2*x2)+(y2*y2);
+
+	return (int) sqrt((double)d);
+}
+
+
+void loadDataInGraph(char * path, List * nodeList, List * pathList)
 {
 	FILE * pFile;
 	char buffer[READ_BUFFER];
@@ -33,22 +58,15 @@ void loadData(char * path, List * nodeList, List * pathList)
 	fgets(buffer, READ_BYTE_SIZE, pFile);
 	int numberOfNodes = atoi(buffer);
 
-	//Get the number of edges from the file
-	//fgets(buffer, READ_BYTE_SIZE, pFile);
-	//int numberOfEdges = atoi(buffer);
-
-	//Allocate nodes array on the heap
-	//listOfnodes =  (Node*)malloc(sizeof(Node*)*numberOfNodes);
-
 	int i = 0;
+	char * nodeName;
+	char * x;
+	char * y;
+
 	//Reading in each Node line
 	while( i < numberOfNodes)
 	{
 		fgets(buffer, READ_BYTE_SIZE, pFile);
-
-		char * nodeName;
-		char * x;
-		char * y;
 		split(buffer,3,&nodeName,&x,&y);
 
 		Node * newNode = malloc(sizeof(Node));
@@ -61,7 +79,6 @@ void loadData(char * path, List * nodeList, List * pathList)
 		newNode->y = atoi(y);
 
 		//Alocating the edge list for each node
-		//TODO Fix spec to have edges first
 		newNode->edges = (Edge*)malloc(sizeof(Edge*)*20);
 
 		ListPush(nodeList,newNode, 0);
@@ -69,30 +86,40 @@ void loadData(char * path, List * nodeList, List * pathList)
 		i++;
 	}
 
-	Link * iter = nodeList->mHead;
+	free(nodeName);
+	free(x);
+	free(y);
 
-	while(iter!= 0)
-	{          
-		Node * p = iter->mData;
-		printf("Node [%s] created \n", p->name);
-
-		iter = iter->mNext;
+	if(DEBUG_MODE == 1)
+	{
+		Link * iter = nodeList->mHead;
+		while(iter!= 0)
+		{          
+			printf("Node [%s] created \n", ((Node *)iter->mData)->name);
+			iter = iter->mNext;
+		}
 	}
-
-	// printf("%s\n\n", "Nodes objects constructed");
 
 	// //Seek to next line basically
 	fgets(buffer, READ_BYTE_SIZE, pFile);
 
+	char * nodeAName;
+	char * nodeBName;
+	char * weight;
+
+	//Get the number of edges from the file
+	fgets(buffer, READ_BYTE_SIZE, pFile);
+	int numberOfEdges = atoi(buffer);
+
 	// While there are lines in the file and the line is not equal to PATHS
-	while(fgets(buffer, READ_BYTE_SIZE, pFile) != NULL && strncmp(trim(buffer), "PATHS", 4) != 0)
+	while(fgets(buffer, READ_BYTE_SIZE, pFile) != NULL && strncmp(trim(buffer), "PATHS", 5) != 0)
 	{
-		char * nodeAName;
-		char * nodeBName;
-		char * weight;
 		split(buffer,3,&nodeAName,&nodeBName,&weight);
 
-		printf("Buffer[%s] Edge: From Node [%s] to Node [%s] weight [%s]\n", buffer, nodeAName,nodeBName,weight);
+		if(DEBUG_MODE == 1)
+		{
+			printf("Buffer[%s] Edge: From Node [%s] to Node [%s] weight [%s]\n", buffer, nodeAName,nodeBName,weight);
+		}
 
 		Edge * edge = malloc(sizeof(Edge));
 		edge->node = (Node*)ListFind(nodeList,nodeBName, lookUpCmp)->mData;
@@ -101,65 +128,53 @@ void loadData(char * path, List * nodeList, List * pathList)
 		Node * node = ListFind(nodeList,nodeAName, lookUpCmp)->mData;
 		node->edges[node->numEdges] = edge;
 		node->numEdges++;
-
-		//printf("Edge from %s to %s\n", node->name, edge->node->name );
 	}
 
-	printf("%s\n\n", "Edges objects constructed");
-	Link * nodeListIter = nodeList->mHead;;
-	Node * currentNode = 0;
+	free(nodeAName);
+	free(nodeBName);
+	free(weight);
 
 	//This just print out some useful information
-	while(nodeListIter != 0)
-	{          
-		//printf("Node [%i] has edges \n", i);
-		currentNode = nodeListIter->mData;
-		printf("Node [%s] has edges \n", currentNode->name);
-		int j = 0;
-		while(j < currentNode->numEdges)
-		{
-			Edge * e = currentNode->edges[j];
+	if(DEBUG_MODE == 1)
+	{
+		Link * nodeListIter = nodeList->mHead;;
+		Node * currentNode = 0;
 
-			printf("	Edge to Node [%s] and a weight of %i \n", e->node->name, e->weight);
-			j++;
+		while(nodeListIter != 0)
+		{          
+			currentNode = nodeListIter->mData;
+			printf("Node [%s] has edges \n", currentNode->name);
+			int j = 0;
+			while(j < currentNode->numEdges)
+			{
+				Edge * e = currentNode->edges[j];
+
+				printf("	Edge to Node [%s] and a weight of %i \n", e->node->name, e->weight);
+				j++;
+			}
+			printf("\n");
+			nodeListIter = nodeListIter->mNext;
 		}
-		printf("\n");
-		nodeListIter = nodeListIter->mNext;
 	}
 
+	char * start;
+	char * dest;
 	//Get the paths to find
 	while(fgets(buffer, READ_BYTE_SIZE, pFile) != NULL)
 	{
-		char * start;
-		char * dest;
 		split(buffer,2,&start, &dest);
 
 		Path * path  = malloc(sizeof(Path));
 		path->nodeStart = ListFind(nodeList,start, lookUpCmp)->mData; 
 		path->nodeDest = ListFind(nodeList,dest, lookUpCmp)->mData; 
-		//printf("Created Path: from Node [%s] to Node [%s] \n", path->nodeA->name, path->nodeB->name );
 		ListPush(pathList, path, 0);
 	}
 
+	free(start);
+	free(dest);
+
 }
 
-//Straight line distance
-int calcHeuristic(int x0, int y0, int x1, int y1)
-{
-	int x2 = x0 - x1;
-	int y2 = y0 - y1; 
-	int d = (x2*x2)+(y2*y2);
-
-	return (int) sqrt((double)d);
-}
-
-int nodeCompare(void * a, void * b)
-{
-	Node * x = a;
-	Node * y = b;
-
-	return (x->actualCost + x->estimatedCost) > (y->actualCost + y->estimatedCost);
-}
 
 void astar(List * graph, Node * start, Node * dest)
 {
@@ -212,13 +227,20 @@ void astar(List * graph, Node * start, Node * dest)
 int main(int argc, char* argv[])
 {
 
-	printf("%s\n", "Program started");
 	//ListRunAllTests();
-	printf("%s\n", "Unit tests complete");
 
 	List * nodeList = ListAllocate();
 	List * pathList = ListAllocate();
-	loadData("data.txt",nodeList,pathList);
+
+	if(argc>1)
+	{
+		//Read name of file from commandline
+		loadDataInGraph(argv[1],nodeList,pathList);
+
+	}else{
+		loadDataInGraph("data.txt",nodeList,pathList);
+	}
+	
 
 	Link * pathListIter = pathList->mHead;
 	Path * currentPath = 0;
@@ -228,7 +250,6 @@ int main(int argc, char* argv[])
 		currentPath = pathListIter->mData;
 
 		printf("\nRunning A * with start Node [%s] and dest [%s] \n", currentPath->nodeStart->name, currentPath->nodeDest->name);
-
 		astar(nodeList, currentPath->nodeStart,currentPath->nodeDest);		
 
 		//Increment the iteratior
