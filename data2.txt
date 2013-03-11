@@ -1,0 +1,28 @@
+NODES
+10
+A 1 0
+B 4 1
+C 6 2
+D 6 4
+E 5 5
+F 8 4
+I 3 3
+K 1 5
+J 2 5
+L 4 6
+EDGES
+9
+A B 1
+A I 1
+B C 1
+C D 1
+D F 1
+D E 1
+I L 1
+K I 1
+K J 1
+PATHS
+2
+A B
+
+

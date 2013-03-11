@@ -10,8 +10,6 @@ typedef struct EdgeType Edge;
 typedef struct Node_t{
 
 	List * edgeList;
-	Edge ** edges; //ArcList
-	int numEdges;
 
 	int x;
 	int y;
