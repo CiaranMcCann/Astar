@@ -34,8 +34,8 @@ struct EdgeType{
 
 typedef struct 
 {
-	Node * nodeA;
-	Node * nodeB;
+	Node * nodeStart;
+	Node * nodeDest;
 
 }Path;
 

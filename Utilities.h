@@ -15,3 +15,39 @@ unsigned int randr(unsigned int min, unsigned int max)
 
        return (max - min +1)*scaled + min;
 }
+
+void split(char * buffer, int num, ...)
+{
+     char* string;
+     char* tofree;
+     string = strdup(trim(buffer));
+
+     if (string != NULL)
+     {
+        tofree = string;
+
+        va_list arguments; 
+
+        //Initializing arguments to store all values after num 
+        va_start ( arguments, num );           
+
+        int i = 0;
+        for (i = 0; i < num; i++ )        
+        {
+           //Item is the final store place of the split substring
+           char ** arg = va_arg ( arguments, char *);
+
+           //Split the strings, delimiter is space
+           char * splitBuffer = strsep(&string, " ");
+
+           //Allocate the buffer memory to store the splitBuffer
+           *arg  =  malloc(sizeof(char*)*strlen(splitBuffer));
+
+           strcpy(*arg ,splitBuffer);
+           //printf("Buffer [%s] -- [%s]\n", buffer, *arg);
+        }
+        va_end ( arguments ); // Cleans up the list
+
+        free(tofree);
+     }
+ }
