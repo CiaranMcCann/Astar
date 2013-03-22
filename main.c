@@ -8,7 +8,7 @@
 #include "GraphStructs.h"
 #include "List.h"
 
-#define DEBUG_MODE 1
+#define DEBUG_MODE 0
 #define READ_BYTE_SIZE 300
 #define READ_BUFFER 500
 
@@ -228,7 +228,12 @@ void astar(List * graph, Node * start, Node * dest)
 			toExpand->previous = currentNode;
 			
 			//printf("Push Node %i onto openedList with emimatedCost %i and actualCost %i \n", toExpand->name, toExpand->estimatedCost, toExpand->actualCost );
-			ListPush( openedList, toExpand, nodeCompare);
+			
+			//Prevents a loop
+			if(ListFind(closedList, toExpand->name, nodeCompare) == 0)
+			{
+				ListPush( openedList, toExpand, nodeCompare);
+			}
 			
 			edgeIter = edgeIter->mNext;
 		}
