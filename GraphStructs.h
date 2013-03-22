@@ -4,32 +4,36 @@
 
 
 typedef struct EdgeType Edge;
-//typedef struct Node NodeType;
-//typedef struct Node Node;
 
+/*! \brief Graph Node structure
+ */
 typedef struct Node_t{
 
-	List * edgeList;
+	List * edgeList; /*!< List of the edges this node has */
 
-	int x;
+	int x; 
 	int y;
 
-	int actualCost;
+	int actualCost; 
 	int estimatedCost;
 
-	struct Node_t * previous;
 
+	struct Node_t * previous;
 	char * name;
 
 } Node;
 
+/*! \brief Edges which connect the Nodes
+ */
 struct EdgeType{
 
-	Node * node; //Node which it pionts to
+	Node * node; /*!< Node which this edge connects to*/ 
 	int weight;
 
 };
 
+/*! \brief Path to test, start and dest nodes
+ */
 typedef struct 
 {
 	Node * nodeStart;

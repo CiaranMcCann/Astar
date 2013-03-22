@@ -1,3 +1,8 @@
+/*!
+*  \brief Removes junk from a string
+*
+*  \param C-style string
+*/
 const char *trim(char *s) {
     char *ptr;
     if (!s)
@@ -9,6 +14,10 @@ const char *trim(char *s) {
     return s;
 }
 
+/*!
+*  \brief Random function
+*
+*/
 unsigned int randr(unsigned int min, unsigned int max)
 {
        double scaled = (double)rand()/RAND_MAX;
@@ -16,6 +25,13 @@ unsigned int randr(unsigned int min, unsigned int max)
        return (max - min +1)*scaled + min;
 }
 
+/*!
+*  \brief Splits a string into as many substring as you want
+* 
+*  \param The buffer to split
+*  \param Number of substrings to split it into
+*  \param Pionters to places to store the substrings
+*/
 void split(char * buffer, int num, ...)
 {
      char* string;

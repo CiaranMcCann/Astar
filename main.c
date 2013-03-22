@@ -12,16 +12,26 @@
 #define READ_BYTE_SIZE 300
 #define READ_BUFFER 500
 
-// Predicate functions //
 
-//Compare function used to find a node with name
+/*!
+*  \brief Predicate compare function used to find a node with name
+*
+*  \param Node and a C-style string of a NodeName
+*/
 int lookUpCmp(void * node, void * nodeName)
 {
 	//string compares a nodes name to a string passed in
 	return (strncmp(trim(nodeName), trim( ((Node*)node)->name), strlen(nodeName)) == 0);
 }
 
-//Compares the Nodes so as to allow them be sorted
+
+/*!
+*  \brief Predicate compares the Nodes so as to allow them be sorted. 
+*  it takes two void pionters to allow for a generic use of the List structure 
+*
+*  \param Node * 
+*  \param Node *
+*/
 int nodeCompare(void * pNodeA, void * pNodeB)
 {
 	//Casting to actual types
@@ -30,9 +40,11 @@ int nodeCompare(void * pNodeA, void * pNodeB)
 
 	return (nodeA->actualCost + nodeA->estimatedCost) > (nodeB->actualCost + nodeB->estimatedCost);
 }
-// End Predicate functions //
 
-//Straight line distance - Heuristic for aStar
+
+/*!
+*  \brief Straight line distance - Heuristic for aStar
+*/
 int calcHeuristic(int x0, int y0, int x1, int y1)
 {
 	int x2 = x0 - x1;
@@ -43,6 +55,13 @@ int calcHeuristic(int x0, int y0, int x1, int y1)
 }
 
 
+/*!
+*  \brief Loads the data from the file and sets up the graph. 
+*
+*  \param Path to the file to load  
+*  \param The graph 
+*  \param List of paths to check 
+*/
 void loadDataInGraph(char * path, List * nodeList, List * pathList)
 {
 	FILE * pFile = fopen(path, "r");
@@ -169,7 +188,13 @@ void loadDataInGraph(char * path, List * nodeList, List * pathList)
 	free(dest);
 }
 
-
+/*!
+*  \brief A * algothrim
+*
+*  \param The graph of nodes to run the search on  
+*  \param Start Node
+*  \param Desition Node 
+*/
 void astar(List * graph, Node * start, Node * dest)
 {
 	List * closedList = ListAllocate();
@@ -218,6 +243,7 @@ void astar(List * graph, Node * start, Node * dest)
 		endNode = endNode->previous;
 	}
 }
+
 
 int main(int argc, char* argv[])
 {

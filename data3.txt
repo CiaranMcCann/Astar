@@ -1,0 +1,17 @@
+NODES
+5
+a 4 5
+b 56 78
+c 3 45
+d 56 789
+e 34 45
+EDGES
+4
+a b 4
+b c 2
+b e 1
+a c 5
+PATHS
+2
+a e
+b c

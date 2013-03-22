@@ -8,6 +8,10 @@
 //Forward decaleration
 typedef struct LinkType Link;
 
+/*!
+*  \brief The main list structure
+* 
+*/
 typedef struct 
 {
   Link * mHead;
@@ -17,6 +21,10 @@ typedef struct
 
 }List;
 
+/*!
+*  \brief Links/Nodes in the list
+* 
+*/
 struct LinkType
 {
     Link * mNext;
@@ -174,105 +182,4 @@ void ListDeallocate(List * list)
     // assert(true && " Deallocate bitch!! ")
     //TODO :)
 }
-
-
-// UNIT TESTING CODE BELOW
-
-
-int cmp(void * a, void * b)
-{
-    SomeDataType * x = a;
-    SomeDataType * y = b;
-    //printf("%i > %i\n", x->x , y->x);
-    return x->x > y->x;
-}
-
-void ListTestPushPop()
-{
-    List * list = ListAllocate();
-
-    int i = 0;
-    while(i < 10)
-    {
-        SomeDataType * tmp = malloc(sizeof(SomeDataType*));
-        tmp->x = i;
-
-        //Add links to the end of the list
-        ListPush(list,tmp,cmp);
-        i++;
-    }
-
-    //Remove links from the top of the list
-    ListPop(list);
-    ListPop(list);
-    ListPop(list);
-    
-    SomeDataType * tmp = ListHead(list)->mData;
-    assert( tmp->x == 3 && " UNIT TEST FAILED ");
-
-    Link * link = ListNext( ListHead(list) );
-    tmp = link->mData;
-
-
-    assert( tmp->x == 4 && " UNIT TEST FAILED ");
-
-}
-
-void ListTestSort()
-{
-    List * list = ListAllocate();
-    SomeDataType * tmp;
-
-    int i = 0;
-    while(i < 10)
-    {
-        SomeDataType * tmp = malloc(sizeof(SomeDataType*));
-        tmp->x = randr(0,10);
-
-        //Add links to the end of the list
-        ListPush(list,tmp,cmp);
-        i++;
-    }
-
-    
-    //tmp = ListHead(list)->mData;
-    //assert( tmp->x == 9 && " UNIT TEST FAILED ");
-    printf("%s\n", "Unordered");
-    {
-        Link * iter = list->mHead;
-
-            while(iter!= 0)
-            {          
-                SomeDataType * p = iter->mData;
-                printf("Item %i\n", p->x);
-
-                iter = iter->mNext;
-            }
-    }
-
-        ListSort(list,cmp);
-
-    printf("%s\n", "Ordered");
-    {
-        Link * iter = list->mHead;
-
-            while(iter!= 0)
-            {          
-                SomeDataType * p = iter->mData;
-                printf("Item %i\n", p->x);
-
-                iter = iter->mNext;
-            }
-    }
-}
-
-
-void ListRunAllTests()
-{
-    //ListTestPushPop();
-    ListTestSort();
-}
-
-
-
 #endif
